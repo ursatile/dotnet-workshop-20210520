@@ -7,6 +7,7 @@ using Autobarn.Data;
 using Autobarn.Data.Entities;
 using Autobarn.Website.Models;
 using System.Dynamic;
+using Autobarn.Website.Controllers.Api;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -66,7 +67,24 @@ namespace Autobarn.Website.Controllers.api {
 		public IActionResult Get(string id) {
 			var vehicle = db.FindVehicle(id);
 			if (vehicle == default) return NotFound($"Sorry, there's no car with registration {id} in our system.");
-			return Ok();
+			var result = vehicle.ToDynamic();
+			result._links = new {
+				self = new { 
+					href = $"/api/vehicles/{id}"
+				},
+				media = GetMediaLinks(vehicle)
+			};
+			return Ok(result);
+		}
+
+		private object GetMediaLinks(Vehicle vehicle) {
+			// hit some database or something
+			return new[] {
+				new { name = "image001", href = "https://images.somecdn.com/autobarn/image001.jpg" },
+				new { name = "image002", href = "https://images.somecdn.com/autobarn/image002.jpg" },
+				new { name = "image003", href = "https://images.somecdn.com/autobarn/image003.jpg" },
+				new { name = "image004", href = "https://images.somecdn.com/autobarn/image004.jpg" },
+			};
 		}
 
 		// POST api/vehicles

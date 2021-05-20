@@ -25,6 +25,14 @@ namespace Autobarn.Website {
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services) {
+
+			var loggerFactory = LoggerFactory.Create(builder => {
+				builder
+					.AddConsole(_ => { })
+					.AddFilter((category, level) =>
+						category == DbLoggerCategory.Database.Command.Name && level == LogLevel.Information);
+			});
+
 			
 			services.AddRouting(options => options.LowercaseUrls = true);
 			services.AddControllersWithViews().AddNewtonsoftJson();
@@ -37,6 +45,7 @@ namespace Autobarn.Website {
 			var sqlConnectionString = Configuration.GetConnectionString("AutobarnSqlConnectionString");
 			services.AddDbContext<AutobarnDbContext>(options => {
 				options.UseLazyLoadingProxies();
+				options.UseLoggerFactory(loggerFactory);
 				options.UseSqlServer(sqlConnectionString);
 			});
 			services.AddScoped<IAutobarnDatabase, AutobarnSqlDatabase>();

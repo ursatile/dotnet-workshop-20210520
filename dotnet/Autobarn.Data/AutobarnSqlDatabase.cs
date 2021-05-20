@@ -9,7 +9,8 @@ namespace Autobarn.Data {
 
 		public AutobarnSqlDatabase(AutobarnDbContext dbContext) => this.dbContext = dbContext;
 
-		public IEnumerable<Vehicle> ListVehicles() => dbContext.Vehicles;
+		public IEnumerable<Vehicle> ListVehicles() => dbContext.Vehicles
+			.Include(v => v.VehicleModel).ThenInclude(model => model.Manufacturer);
 
 		public IEnumerable<Manufacturer> ListManufacturers() => dbContext.Manufacturers;
 

@@ -1,5 +1,11 @@
 ﻿using System.Dynamic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 using Autobarn.Website;
+using Autobarn.Website.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -53,6 +59,37 @@ namespace Autobarn.ApiTests {
 			var vehicleJson = await client.GetStringAsync(href);
 			dynamic vehicles = JsonConvert.DeserializeObject(vehicleJson);
 			Assert.True(vehicles.total > 0);
+		}
+
+		private async Task<string> PutVehicle(HttpClient client, string registration, int year, string color,
+			string modelCode) {
+			var api = await client.GetStringAsync("/api");
+			dynamic hal = JsonConvert.DeserializeObject(api);
+			var href = (string) hal._actions.update.href;
+			href = href.Replace("{id}", registration);
+			var vehicle = new {
+				registration,
+				year,
+				color,
+				modelCode
+			};
+			var json = JsonConvert.SerializeObject(vehicle);
+			var content = new StringContent(json, Encoding.UTF8, "application/json");
+			var response = await client.PutAsync(href, content);
+			response.EnsureSuccessStatusCode();
+			return href;
+		}
+
+		[Fact]
+		public async void PutCarViaApi() {
+			var client = factory.CreateClient();
+			var vehicleUri = await PutVehicle(client, "TEST1234", 1985, "Red", "volkswagen-beetle");
+			var response = await client.GetStringAsync(vehicleUri);
+			var vehicle = JsonConvert.DeserializeObject<dynamic>(response);
+
+			Assert.Equal(((string)vehicle.Color), "Red");
+			
+			await client.DeleteAsync(vehicleUri);
 		}
 	}
 }

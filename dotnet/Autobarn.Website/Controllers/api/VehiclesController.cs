@@ -106,7 +106,8 @@ namespace Autobarn.Website.Controllers.api {
 		// DELETE api/vehicles/5
 		[HttpDelete("{id}")]
 		public IActionResult Delete(string id) {
-			return Ok(id);
+			db.DeleteVehicle(id);
+			return NoContent();
 		}
 	}
 }

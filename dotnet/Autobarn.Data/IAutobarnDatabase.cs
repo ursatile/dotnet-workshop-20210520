@@ -19,6 +19,6 @@ namespace Autobarn.Data {
 
 		public void CreateVehicle(Vehicle vehicle);
 		public void UpdateVehicle(Vehicle vehicle);
-		public void DeleteVehicle(Vehicle vehicle);
+		public void DeleteVehicle(string registration);
 	}
 }

@@ -53,7 +53,9 @@ namespace Autobarn.Data {
 			dbContext.SaveChanges();
 		}
 
-		public void DeleteVehicle(Vehicle vehicle) {
+		public void DeleteVehicle(string registration) {
+			var vehicle = dbContext.Vehicles.Find(registration);
+			if (vehicle == default) return;
 			dbContext.Vehicles.Remove(vehicle);
 			dbContext.SaveChanges();
 		}

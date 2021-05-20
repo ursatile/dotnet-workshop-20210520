@@ -11,6 +11,14 @@ namespace Autobarn.Website.Controllers.api {
 					vehicles = new {
 						href = "/api/vehicles"
 					}
+				},
+				_actions = new {
+					update = new {
+						name = "Create/update a vehicle",
+						href = "/api/vehicles/{id}",
+						method = "PUT",
+						contentType = "application/json"
+					}
 				}
 			};
 			return Ok(result);

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Autobarn.Data;
 using Autobarn.Data.Entities;
 using Autobarn.Website.Models;
+using System.Dynamic;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -21,9 +22,43 @@ namespace Autobarn.Website.Controllers.api {
 		public VehiclesController(IAutobarnDatabase db) {
 			this.db = db;
 		}
+
+		private object Paginate(string href, int index, int count, int total) {
+			dynamic links = new ExpandoObject();
+			links.self = new {
+				href
+			};
+			if (index + count < total) {
+				links.next = new {
+					href = $"{href}?index={index + count}&count={count}"
+				};
+				links.final = new {
+					href = $"{href}?index={total - count}"
+				};
+			}
+			if (index > 0) {
+				links.previous = new {
+					href = $"{href}?index={index - count}&count={count}"
+				};
+				links.first = new {
+					href = $"{href}?count={count}"
+				};
+			}
+			return links;
+		}
+
 		[HttpGet]
-		public IEnumerable<Vehicle> Get() {
-			return db.ListVehicles();
+		public IActionResult Get(int index, int count = 10) {
+			var items = db.ListVehicles().Skip(index).Take(count);
+			var total = db.CountVehicles();
+			var result = new {
+				_links = Paginate("/api/vehicles", index, count, total),
+				total,
+				index,
+				count,
+				items
+			};
+			return Ok(result);
 		}
 
 		// GET api/vehicles/5

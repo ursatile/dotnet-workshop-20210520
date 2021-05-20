@@ -40,5 +40,7 @@ namespace Autobarn.Data {
 			dbContext.Vehicles.Remove(vehicle);
 			dbContext.SaveChanges();
 		}
+
+		public int CountVehicles() => dbContext.Vehicles.Count();
 	}
 }

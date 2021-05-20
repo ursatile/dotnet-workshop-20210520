@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Autobarn.Data {
 	public interface IAutobarnDatabase {
 		public IEnumerable<Vehicle> ListVehicles();
+		public int CountVehicles();
 		public IEnumerable<Manufacturer> ListManufacturers();
 		public IEnumerable<Model> ListModels();
 

@@ -48,19 +48,11 @@ namespace Autobarn.ApiTests {
 			var client = factory.CreateClient();
 			var response = await client.GetAsync("/api");
 			var json = await response.Content.ReadAsStringAsync();
-			var thing = JsonConvert.DeserializeObject(json);
-			//var vehiclesLink = thing["_links"]["vehicles"];
-			//var href = (string)vehiclesLink["href"];
-			//href.ShouldBe("/api/vehicles");
-		}
-
-		[Fact]
-		public async void VehiclesLinkReturnsVehicleHypermedia() {
-			var client = factory.CreateClient();
-			var rawResponseBody = await client.GetStringAsync("/api/vehicles");
-			rawResponseBody.ShouldStartWith("{\"_links\"");
-			//dynamic data = JsonConvert.DeserializeObject<ExpandoObject>(json);
-			//Assert.True(data.total > 0);
+			dynamic data = JsonConvert.DeserializeObject(json);
+			var href = (string)data._links.vehicles.href;
+			var vehicleJson = await client.GetStringAsync(href);
+			dynamic vehicles = JsonConvert.DeserializeObject(vehicleJson);
+			Assert.True(vehicles.total > 0);
 		}
 	}
 }

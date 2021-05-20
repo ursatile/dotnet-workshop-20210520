@@ -28,20 +28,20 @@ namespace Autobarn.Website.Controllers.api {
 			links.self = new {
 				href
 			};
+			links.first = new {
+				href = $"{href}?count={count}"
+			};
+			links.final = new {
+				href = $"{href}?index={total - count}"
+			};
 			if (index + count < total) {
 				links.next = new {
 					href = $"{href}?index={index + count}&count={count}"
-				};
-				links.final = new {
-					href = $"{href}?index={total - count}"
 				};
 			}
 			if (index > 0) {
 				links.previous = new {
 					href = $"{href}?index={index - count}&count={count}"
-				};
-				links.first = new {
-					href = $"{href}?count={count}"
 				};
 			}
 			return links;

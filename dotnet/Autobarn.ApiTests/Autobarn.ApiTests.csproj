@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Dropbox\Workshops\github\dotnet-workshop-20210520\dotnet\Autobarn.Website\Autobarn.Website.csproj" />
+    <ProjectReference Include="..\Autobarn.Website\Autobarn.Website.csproj" />
   </ItemGroup>
 
 </Project>

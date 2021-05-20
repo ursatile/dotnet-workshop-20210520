@@ -35,6 +35,9 @@ namespace Autobarn.Website.Controllers.api {
 		// POST api/vehicles
 		[HttpPost]
 		public IActionResult Post([FromBody] VehicleDto dto) {
+			// If the vehicle already exists, return a 409 Conflict
+			var existing = db.FindVehicle(dto.Registration);
+			if (existing != default) return Conflict($"Sorry - we already have a car with registration {dto.Registration} in our database!");
 			var vehicleModel = db.FindModel(dto.ModelCode);
 			var vehicle = new Vehicle {
 				Registration = dto.Registration,
@@ -43,7 +46,7 @@ namespace Autobarn.Website.Controllers.api {
 				VehicleModel = vehicleModel
 			};
 			db.CreateVehicle(vehicle);
-			return Ok(dto);
+			return Created($"/api/vehicles/{vehicle.Registration}", dto);
 		}
 
 		// PUT api/vehicles/5

@@ -57,7 +57,7 @@ namespace Autobarn.Website.Controllers.api {
 				total,
 				index,
 				count,
-				items
+				items = items.Select(v => v.ToResource())
 			};
 			return Ok(result);
 		}
@@ -67,25 +67,10 @@ namespace Autobarn.Website.Controllers.api {
 		public IActionResult Get(string id) {
 			var vehicle = db.FindVehicle(id);
 			if (vehicle == default) return NotFound($"Sorry, there's no car with registration {id} in our system.");
-			var result = vehicle.ToDynamic();
-			result._links = new {
-				self = new { 
-					href = $"/api/vehicles/{id}"
-				},
-				media = GetMediaLinks(vehicle)
-			};
+			var result = vehicle.ToResource();
 			return Ok(result);
 		}
 
-		private object GetMediaLinks(Vehicle vehicle) {
-			// hit some database or something
-			return new[] {
-				new { name = "image001", href = "https://images.somecdn.com/autobarn/image001.jpg" },
-				new { name = "image002", href = "https://images.somecdn.com/autobarn/image002.jpg" },
-				new { name = "image003", href = "https://images.somecdn.com/autobarn/image003.jpg" },
-				new { name = "image004", href = "https://images.somecdn.com/autobarn/image004.jpg" },
-			};
-		}
 
 		// POST api/vehicles
 		[HttpPost]

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Autobarn.Data.Entities;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Autobarn.Data {
@@ -9,8 +10,23 @@ namespace Autobarn.Data {
 
 		public AutobarnSqlDatabase(AutobarnDbContext dbContext) => this.dbContext = dbContext;
 
-		public IEnumerable<Vehicle> ListVehicles() => dbContext.Vehicles
-			.Include(v => v.VehicleModel).ThenInclude(model => model.Manufacturer);
+		// public IEnumerable<Vehicle> ListVehicles() => dbContext.Vehicles;
+		// 	// .Include(v => v.VehicleModel).ThenInclude(model => model.Manufacturer);
+
+		public IEnumerable<Vehicle> ListVehicles() {
+			var conn = dbContext.Database.GetDbConnection();
+			return conn.Query<Vehicle>("SELECT * FROM Vehicles");
+		}
+
+		public IEnumerable<Vehicle> ListVehicles(int index, int count) {
+			var conn = dbContext.Database.GetDbConnection();
+			const string SQL = @"
+			select * from vehicles 
+			order by registration 
+			offset @index rows 
+			fetch next @count rows only";
+			return conn.Query<Vehicle>(SQL, new { index, count });
+		}
 
 		public IEnumerable<Manufacturer> ListManufacturers() => dbContext.Manufacturers;
 

@@ -33,9 +33,12 @@ namespace Autobarn.Website {
 						category == DbLoggerCategory.Database.Command.Name && level == LogLevel.Information);
 			});
 
-			
+
 			services.AddRouting(options => options.LowercaseUrls = true);
-			services.AddControllersWithViews().AddNewtonsoftJson();
+			services.AddControllersWithViews()
+				.AddNewtonsoftJson()
+				.AddXmlSerializerFormatters();
+
 
 #if DEBUG
 			services.AddRazorPages().AddRazorRuntimeCompilation();

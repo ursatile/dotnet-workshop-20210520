@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autobarn.Data;
 using Autobarn.Data.Entities;
+using Autobarn.Website.Messaging;
 using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -44,6 +45,10 @@ namespace Autobarn.Website {
 				.AddXmlSerializerFormatters();
 
 			services.AddSingleton<ServiceBusClient>(_ => new ServiceBusClient(BUS_CONNECTION_STRING));
+			services.AddSingleton<IAutobarnServiceBus>(sp => {
+				var client = sp.GetRequiredService<ServiceBusClient>();
+				return new AutobarnAzureServiceBus(client, TOPIC);
+			});
 
 #if DEBUG
 			services.AddRazorPages().AddRazorRuntimeCompilation();

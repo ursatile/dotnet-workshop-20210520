@@ -11,8 +11,8 @@ namespace Publisher {
 			var sender = client.CreateSender("pubsub-demo-topic");
 			while (true) {
                 Console.WriteLine("Press a key to send a message:");
-                Console.ReadKey(false);
-				var body = $"Message #{i++} from Dylan at {DateTime.Now}";
+                var lyric = Console.ReadLine();
+				var body = $"Message #{i++} from Dylan at {DateTime.Now}: {lyric}";
 				var message = new ServiceBusMessage(body);                
 				await sender.SendMessageAsync(message);
                 Console.WriteLine($"Sent: {body}");

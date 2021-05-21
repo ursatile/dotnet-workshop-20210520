@@ -8,6 +8,8 @@ using Autobarn.Data.Entities;
 using Autobarn.Website.Models;
 using System.Dynamic;
 using Autobarn.Website.Controllers.Api;
+using Azure.Messaging.ServiceBus;
+using Newtonsoft.Json;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,10 +19,12 @@ namespace Autobarn.Website.Controllers.api {
 	[Route("api/[controller]")]
 	[ApiController]
 	public class VehiclesController : ControllerBase {
+		private ServiceBusClient bus;
 		private readonly IAutobarnDatabase db;
 
 		// GET: api/vehicles
-		public VehiclesController(IAutobarnDatabase db) {
+		public VehiclesController(IAutobarnDatabase db, ServiceBusClient bus) {
+			this.bus = bus;
 			this.db = db;
 		}
 
@@ -74,7 +78,7 @@ namespace Autobarn.Website.Controllers.api {
 
 		// POST api/vehicles
 		[HttpPost]
-		public IActionResult Post([FromBody] VehicleDto dto) {
+		public async Task<IActionResult> Post([FromBody] VehicleDto dto) {
 			// If the vehicle already exists, return a 409 Conflict
 			var existing = db.FindVehicle(dto.Registration);
 			if (existing != default) return Conflict($"Sorry - we already have a car with registration {dto.Registration} in our database!");
@@ -86,6 +90,9 @@ namespace Autobarn.Website.Controllers.api {
 				VehicleModel = vehicleModel
 			};
 			db.CreateVehicle(vehicle);
+			var sender = bus.CreateSender("autobarn-new-vehicle-topic");
+			var message = new ServiceBusMessage(JsonConvert.SerializeObject(vehicle));
+			await sender.SendMessageAsync(message);
 			return Created($"/api/vehicles/{vehicle.Registration}", dto);
 		}
 

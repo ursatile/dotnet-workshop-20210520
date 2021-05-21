@@ -17,6 +17,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Autobarn.Website {
 	public class Startup {
+		const string BUS_CONNECTION_STRING = "Endpoint=sb://autobarn-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=k92YyE1Syn/LuO1JYCstXEEQKoE1Q3QiRbUUlG1bfds=";
+		const string TOPIC = "autobarn-new-vehicle-topic";
+		const string SUBSCRIPTION = "autobarn-auditlog-subscription";
+
 		public Startup(IConfiguration configuration) {
 			Configuration = configuration;
 		}
@@ -39,11 +43,12 @@ namespace Autobarn.Website {
 				.AddNewtonsoftJson()
 				.AddXmlSerializerFormatters();
 
+			services.AddSingleton<ServiceBusClient>(_ => new ServiceBusClient(BUS_CONNECTION_STRING));
 
 #if DEBUG
 			services.AddRazorPages().AddRazorRuntimeCompilation();
 #else
-			services.AddRazorPages();
+            services.AddRazorPages();
 #endif
 			var sqlConnectionString = Configuration.GetConnectionString("AutobarnSqlConnectionString");
 			services.AddDbContext<AutobarnDbContext>(options => {

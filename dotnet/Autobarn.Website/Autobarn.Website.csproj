@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Autobarn.Data\Autobarn.Data.csproj" />
+    <ProjectReference Include="..\Autobarn.Messages\Autobarn.Messages.csproj" />
   </ItemGroup>
 
 </Project>

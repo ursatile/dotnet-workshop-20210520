@@ -1,4 +1,5 @@
 using Autobarn.Data.Entities;
+using Autobarn.Messages;
 using Azure.Messaging.ServiceBus;
 using Newtonsoft.Json;
 
@@ -15,7 +16,14 @@ namespace Autobarn.Website.Messaging {
         }       
 
         public async void PublishNewVehicleMessage(Vehicle vehicle) {
-			var message = new ServiceBusMessage(JsonConvert.SerializeObject(vehicle));
+			var vehicleMessage = new NewVehicleAddedMessage {
+				Registration = vehicle.Registration,
+				Color = vehicle.Color,
+				Year = vehicle.Year.Value,
+				Manufacturer = vehicle.VehicleModel.Manufacturer.Name,
+				Model = vehicle.VehicleModel.Name
+			};
+			var message = new ServiceBusMessage(JsonConvert.SerializeObject(vehicleMessage));
 			await sender.SendMessageAsync(message);
 		}
 	}

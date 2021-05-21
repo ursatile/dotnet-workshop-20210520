@@ -15,6 +15,10 @@ namespace Autobarn.PricingServer {
 		}
 
 		public override Task<PriceReply> GetPrice(PriceRequest request, ServerCallContext context) {
+			if (request.Manufacturer == "ASTON MARTIN") {
+
+			}
+
 			var reply = GetPriceForVehicle(request);
 			return Task.FromResult(reply);
 		}
@@ -22,6 +26,7 @@ namespace Autobarn.PricingServer {
 		private PriceReply GetPriceForVehicle(PriceRequest request) {
             //TODO: calculate prices properly
 			return new PriceReply {
+				StatusCode = "OK",
 				Price = 50,
 				CurrencyCode = "GBP"
 			};

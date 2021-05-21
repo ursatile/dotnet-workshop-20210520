@@ -23,4 +23,5 @@ message PriceRequest {
 message PriceReply {
   int32 price = 1;
   string currencyCode = 2;
+  string statusCode = 3;
 }
